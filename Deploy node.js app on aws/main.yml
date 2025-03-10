@@ -1,0 +1,33 @@
+---
+- name: Deploy nodejs app on cloud 
+  hosts: 35.159.19.159
+  tasks:
+
+
+    - name: Update apt repo and cache
+      apt: 
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 3600
+
+    - name: install nodejs and npm
+      apt:
+        pkg:  
+          - nodejs
+          - npm
+
+    - name: Deploy nodejs app
+      tasks:
+        - name: Copy nodejs folder to a server 
+          copy: 
+            src: /Users/carmenciubancan/Desktop/bootcamp/nodejs-app/nodejs-app-1.0.0.tgz
+            dest: /home/ubuntu/app-1.0.0.tgz
+        - name: Unpack the nodejs file
+          unarchive:
+            src: /home/ubuntu/app-1.0.0.tgz
+            dest: /home/ubuntu
+            remote_src: yes
+
+
+
+  

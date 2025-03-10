@@ -1,0 +1,2 @@
+[servers]
+35.159.19.159 ansible_user=ubuntu ansible_ssh_private_key_file=/Users/carmenciubancan/.ssh/Docker-server.pem
