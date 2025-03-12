@@ -1,0 +1,73 @@
+---
+- name: Deploy nodejs app on cloud 
+  hosts: servers
+  become: yes
+  tasks:
+
+  - name: Update apt repo and cache
+    apt: 
+     update_cache: yes
+     force_apt_get: yes
+     cache_valid_time: 3600
+
+  - name: Install nodejs and npm
+    apt:
+     pkg:  
+      - nodejs
+      - npm
+
+- name: Create new linux user for node app
+  hosts: servers
+  become: yes
+  tasks:
+    - name: Create linux user
+      user:
+        name: nodey
+        comment: "nodey admin"
+        group: admin
+
+
+- name: Deploy nodejs app
+  hosts: servers
+  tasks:
+  
+  - name: Copy nodejs folder to a server 
+    become: yes
+    copy: 
+     src: /Users/carmenciubancan/Desktop/bootcamp/nodejs-app/nodejs-app-1.0.0.tgz
+     dest: /home/nodey/app-1.0.0.tgz
+  
+  - name: Ensure /home/nodey has correct permissions
+    become: yes
+    file:
+      path: /home/nodey
+      state: directory
+      owner: nodey
+      group: admin
+      mode: '0777'
+
+  - name: Unpack the nodejs file
+    become: yes
+    unarchive:
+      src: /home/nodey/app-1.0.0.tgz
+      dest: /home/nodey
+      remote_src: yes
+
+
+  - name: Install dependencies
+    become: yes
+    npm:
+      path: /home/nodey/package
+
+  - name: Start the application
+    become_user: nodey
+    command:
+      chdir: /home/nodey/package/app/
+      cmd: node server
+    async: 1000
+    poll: 0
+
+  - name: Ensure app is running
+    shell: ps aux | grep node
+    register: app_status 
+  - debug: msg={{app_status.stdout_lines}} 
