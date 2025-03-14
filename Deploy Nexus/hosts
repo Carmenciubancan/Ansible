@@ -1,0 +1,2 @@
+[nexus]
+3.67.171.94 ansible_user=ubuntu ansible_ssh_private_key_file=/Users/carmenciubancan/.ssh/Docker-server.pem
